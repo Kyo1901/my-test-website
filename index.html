@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, 'Segoe UI', sans-serif;
+      min-height: 100vh; display: flex; justify-content: center; align-items: center;
+      background: linear-gradient(135deg, #0f172a, #1e3a5f);
+      color: #f1f5f9;
+    }
+    .card {
+      text-align: center; padding: 3rem 2rem;
+      background: rgba(255,255,255,0.05); border-radius: 1rem;
+      backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);
+      max-width: 480px; width: 90%;
+    }
+    .avatar {
+      width: 96px; height: 96px; border-radius: 50%;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      margin: 0 auto 1.5rem; display: flex; justify-content: center; align-items: center;
+      font-size: 2.5rem;
+    }
+    h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    p { color: #94a3b8; line-height: 1.6; margin-bottom: 1rem; }
+    .tag {
+      display: inline-block; padding: 0.3rem 0.8rem; margin: 0.2rem;
+      background: rgba(56,189,248,0.15); border-radius: 2rem;
+      font-size: 0.85rem; color: #7dd3fc;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="avatar">👋</div>
+    <h1>안녕하세요!</h1>
+    <p>웹 개발을 공부하고 있는 주니어 개발자입니다.<br>새로운 기술을 배우고 만드는 것을 좋아합니다.</p>
+    <div>
+      <span class="tag">React</span>
+      <span class="tag">JavaScript</span>
+      <span class="tag">GitHub</span>
+    </div>
+  </div>
+</body>
+</html>
