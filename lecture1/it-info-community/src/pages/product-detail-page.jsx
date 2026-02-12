@@ -105,7 +105,9 @@ function ProductDetailPage() {
       }
       return next;
     });
-    fetchReviews();
+    setReviews((prev) =>
+      prev.map((r) => r.review_id === reviewId ? { ...r, likes: newLikes } : r)
+    );
   };
 
   const formatDate = (dateStr) => {
