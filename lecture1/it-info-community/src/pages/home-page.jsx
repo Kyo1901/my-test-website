@@ -225,7 +225,7 @@ function HomePage() {
           {/* 공지사항 */}
           <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ height: '100%' }}>
-              <CardContent>
+              <CardContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <AnnouncementIcon sx={{ color: 'primary.main', mr: 1 }} />
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -268,7 +268,7 @@ function HomePage() {
                 <Button
                   size="small"
                   onClick={() => navigate('/notices')}
-                  sx={{ mt: 1 }}
+                  sx={{ mt: 'auto', pt: 1 }}
                 >
                   전체보기
                 </Button>
@@ -279,7 +279,7 @@ function HomePage() {
           {/* 인기 게시글 */}
           <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ height: '100%' }}>
-              <CardContent>
+              <CardContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <TrendingUpIcon sx={{ color: 'primary.main', mr: 1 }} />
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -332,7 +332,7 @@ function HomePage() {
                 <Button
                   size="small"
                   onClick={() => navigate('/community')}
-                  sx={{ mt: 1 }}
+                  sx={{ mt: 'auto', pt: 1 }}
                 >
                   전체보기
                 </Button>
