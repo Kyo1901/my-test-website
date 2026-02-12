@@ -29,3 +29,6 @@ npm-debug.log*
 
 # Windows 특수 파일
 nul
+
+# 개인 정보 파일
+개인 정보 파일.ini
