@@ -9,6 +9,8 @@ import ProductListPage from './pages/product-list-page.jsx';
 import ProductDetailPage from './pages/product-detail-page.jsx';
 import AdminPage from './pages/admin-page.jsx';
 import ProfilePage from './pages/profile-page.jsx';
+import LoginPage from './pages/login-page.jsx';
+import RegisterPage from './pages/register-page.jsx';
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
         <Route path="/products/:productId" element={<ProductDetailPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/profile/:userId" element={<ProfilePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
       </Routes>
     </Layout>
   );
