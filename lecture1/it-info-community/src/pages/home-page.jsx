@@ -126,13 +126,13 @@ function HomePage() {
   };
 
   return (
-    <Box sx={{ width: '100%', py: { xs: 2, md: 4 } }}>
+    <Box sx={{ width: '100%' }}>
       {/* 히어로 섹션 */}
       <Box
         sx={{
           bgcolor: 'primary.main',
           color: 'white',
-          py: { xs: 6, md: 10 },
+          py: { xs: 4, md: 6 },
           px: 2,
           textAlign: 'center',
           mb: { xs: 3, md: 5 },
