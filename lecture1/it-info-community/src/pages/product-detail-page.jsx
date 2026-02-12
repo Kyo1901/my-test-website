@@ -19,6 +19,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import supabase from '../utils/supabase-client.js';
 
 /**
@@ -35,6 +36,7 @@ function ProductDetailPage() {
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [avgRating, setAvgRating] = useState(0);
+  const [likedReviews, setLikedReviews] = useState(new Set());
   const [newReview, setNewReview] = useState({
     rating: 5,
     pros: '',
@@ -88,10 +90,21 @@ function ProductDetailPage() {
   };
 
   const handleLikeReview = async (reviewId, currentLikes) => {
+    const alreadyLiked = likedReviews.has(reviewId);
+    const newLikes = alreadyLiked ? currentLikes - 1 : currentLikes + 1;
     await supabase
       .from('it_info_reviews')
-      .update({ likes: currentLikes + 1 })
+      .update({ likes: newLikes })
       .eq('review_id', reviewId);
+    setLikedReviews((prev) => {
+      const next = new Set(prev);
+      if (alreadyLiked) {
+        next.delete(reviewId);
+      } else {
+        next.add(reviewId);
+      }
+      return next;
+    });
     fetchReviews();
   };
 
@@ -265,7 +278,8 @@ function ProductDetailPage() {
                 </Typography>
                 <Button
                   size="small"
-                  startIcon={<ThumbUpIcon />}
+                  variant={likedReviews.has(review.review_id) ? 'contained' : 'outlined'}
+                  startIcon={likedReviews.has(review.review_id) ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
                   onClick={() => handleLikeReview(review.review_id, review.likes || 0)}
                 >
                   추천 ({review.likes || 0})
