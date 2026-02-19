@@ -78,23 +78,23 @@ function ContactInfo() {
               gap: 1.5,
               px: 3,
               py: 2.5,
-              bgcolor: '#111111',
-              border: '1px solid #2A2A2A',
+              bgcolor: 'var(--color-bg-primary)',
+              border: '1px solid var(--color-border)',
               borderRadius: 2,
               cursor: 'pointer',
-              transition: 'border-color 0.2s, background-color 0.2s',
+              transition: 'border-color 0.2s, box-shadow 0.2s',
               '&:hover': {
-                borderColor: '#0071E3',
-                bgcolor: '#161616',
+                borderColor: 'var(--color-primary)',
+                boxShadow: '0 2px 12px rgba(0,113,227,0.1)',
               },
             }}
           >
-            <Box sx={{ color: '#0071E3' }}>{item.icon}</Box>
+            <Box sx={{ color: 'var(--color-primary)' }}>{item.icon}</Box>
             <Box>
-              <Typography sx={{ color: '#6E6E73', fontSize: '0.7rem', mb: 0.2 }}>
+              <Typography sx={{ color: 'var(--color-text-muted)', fontSize: '0.7rem', mb: 0.2 }}>
                 {item.label}
               </Typography>
-              <Typography sx={{ color: '#F5F5F7', fontSize: '0.9rem', fontWeight: 500 }}>
+              <Typography sx={{ color: 'var(--color-text-primary)', fontSize: '0.9rem', fontWeight: 500 }}>
                 {item.value}
               </Typography>
             </Box>
@@ -111,17 +111,18 @@ function ContactInfo() {
             startIcon={item.icon}
             variant="outlined"
             sx={{
-              color: '#A1A1A6',
-              borderColor: '#2A2A2A',
+              color: 'var(--color-text-secondary)',
+              borderColor: 'var(--color-border)',
+              bgcolor: 'var(--color-bg-primary)',
               borderRadius: 1.5,
               textTransform: 'none',
               fontSize: '0.85rem',
               px: 2.5,
               py: 1,
               '&:hover': {
-                borderColor: '#0071E3',
-                color: '#FFFFFF',
-                bgcolor: 'transparent',
+                borderColor: 'var(--color-primary)',
+                color: 'var(--color-primary)',
+                bgcolor: 'var(--color-bg-primary)',
               },
             }}
           >
@@ -139,8 +140,8 @@ function ContactInfo() {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         sx={{
           '& .MuiSnackbarContent-root': {
-            bgcolor: '#1C1C1E',
-            color: '#F5F5F7',
+            bgcolor: 'var(--color-secondary)',
+            color: '#FFFFFF',
             borderRadius: 2,
             fontSize: '0.85rem',
           },

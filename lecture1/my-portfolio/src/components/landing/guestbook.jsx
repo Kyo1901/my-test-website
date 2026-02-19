@@ -20,14 +20,15 @@ const EMOJI_OPTIONS = ['👋', '❤️', '🔥', '✨', '😊', '🎉', '👍', 
 
 const textFieldSx = {
   '& .MuiOutlinedInput-root': {
-    color: '#F5F5F7',
+    color: 'var(--color-text-primary)',
     borderRadius: 1.5,
-    '& fieldset': { borderColor: '#2A2A2A' },
-    '&:hover fieldset': { borderColor: '#444' },
-    '&.Mui-focused fieldset': { borderColor: '#0071E3' },
+    bgcolor: 'var(--color-bg-primary)',
+    '& fieldset': { borderColor: 'var(--color-border)' },
+    '&:hover fieldset': { borderColor: 'var(--color-text-muted)' },
+    '&.Mui-focused fieldset': { borderColor: 'var(--color-primary)' },
   },
-  '& .MuiInputLabel-root': { color: '#6E6E73' },
-  '& .MuiInputLabel-root.Mui-focused': { color: '#0071E3' },
+  '& .MuiInputLabel-root': { color: 'var(--color-text-muted)' },
+  '& .MuiInputLabel-root.Mui-focused': { color: 'var(--color-primary)' },
 };
 
 function Guestbook() {
@@ -94,23 +95,23 @@ function Guestbook() {
   return (
     <Box>
       {/* 구분선 */}
-      <Box sx={{ width: '100%', height: '1px', bgcolor: '#2A2A2A', mb: 5 }} />
+      <Box sx={{ width: '100%', height: '1px', bgcolor: 'var(--color-border-light)', mb: 5 }} />
 
       <Typography
         variant="overline"
-        sx={{ color: '#0071E3', fontWeight: 600, letterSpacing: 2, display: 'block', mb: 1 }}
+        sx={{ color: 'var(--color-primary)', fontWeight: 600, letterSpacing: 2, display: 'block', mb: 1 }}
       >
         Guestbook
       </Typography>
-      <Box sx={{ width: 32, height: 3, bgcolor: '#0071E3', borderRadius: 2, mb: 4 }} />
+      <Box sx={{ width: 32, height: 3, bgcolor: 'var(--color-primary)', borderRadius: 2, mb: 4 }} />
 
       {/* 작성 폼 */}
       <Box
         component="form"
         onSubmit={handleSubmit}
         sx={{
-          bgcolor: '#111111',
-          border: '1px solid #2A2A2A',
+          bgcolor: 'var(--color-bg-primary)',
+          border: '1px solid var(--color-border)',
           borderRadius: 2,
           p: 3,
           mb: 5,
@@ -132,10 +133,10 @@ function Guestbook() {
                 borderRadius: 1.5,
                 cursor: 'pointer',
                 border: '1px solid',
-                borderColor: form.emoji === emoji ? '#0071E3' : '#2A2A2A',
-                bgcolor: form.emoji === emoji ? 'rgba(0,113,227,0.1)' : 'transparent',
+                borderColor: form.emoji === emoji ? 'var(--color-primary)' : 'var(--color-border)',
+                bgcolor: form.emoji === emoji ? 'rgba(0,113,227,0.08)' : 'transparent',
                 transition: 'all 0.15s',
-                '&:hover': { borderColor: '#444' },
+                '&:hover': { borderColor: 'var(--color-text-muted)' },
               }}
             >
               {emoji}
@@ -190,25 +191,28 @@ function Guestbook() {
           variant="contained"
           disabled={isSubmitting || !form.name.trim() || !form.message.trim()}
           sx={{
-            bgcolor: '#0071E3',
+            bgcolor: 'var(--color-button-primary)',
             borderRadius: '980px',
             textTransform: 'none',
             px: 3,
-            '&:hover': { bgcolor: '#0077ED' },
-            '&.Mui-disabled': { bgcolor: '#1C1C1E', color: '#3A3A3C' },
+            '&:hover': { bgcolor: 'var(--color-button-hover)' },
+            '&.Mui-disabled': {
+              bgcolor: 'var(--color-border-light)',
+              color: 'var(--color-text-muted)',
+            },
           }}
         >
-          {isSubmitting ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : '방명록 남기기'}
+          {isSubmitting ? <CircularProgress size={20} sx={{ color: 'var(--color-text-muted)' }} /> : '방명록 남기기'}
         </Button>
       </Box>
 
       {/* 방명록 목록 */}
       {isLoading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-          <CircularProgress sx={{ color: '#0071E3' }} />
+          <CircularProgress sx={{ color: 'var(--color-primary)' }} />
         </Box>
       ) : entries.length === 0 ? (
-        <Typography sx={{ color: '#3A3A3C', textAlign: 'center', py: 4 }}>
+        <Typography sx={{ color: 'var(--color-text-secondary)', textAlign: 'center', py: 4 }}>
           아직 방명록이 없어요. 첫 번째로 남겨보세요! 👋
         </Typography>
       ) : (
@@ -220,8 +224,8 @@ function Guestbook() {
                 display: 'flex',
                 gap: 2,
                 p: 2.5,
-                bgcolor: '#111111',
-                border: '1px solid #2A2A2A',
+                bgcolor: 'var(--color-bg-primary)',
+                border: '1px solid var(--color-border-light)',
                 borderRadius: 2,
               }}
             >
@@ -231,7 +235,7 @@ function Guestbook() {
                   width: 44,
                   height: 44,
                   borderRadius: '50%',
-                  bgcolor: '#1C1C1E',
+                  bgcolor: 'var(--color-bg-secondary)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -244,14 +248,14 @@ function Guestbook() {
               {/* 내용 */}
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                  <Typography sx={{ color: '#F5F5F7', fontWeight: 600, fontSize: '0.9rem' }}>
+                  <Typography sx={{ color: 'var(--color-text-primary)', fontWeight: 600, fontSize: '0.9rem' }}>
                     {entry.name}
                   </Typography>
-                  <Typography sx={{ color: '#3A3A3C', fontSize: '0.75rem' }}>
+                  <Typography sx={{ color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>
                     {formatDate(entry.created_at)}
                   </Typography>
                 </Box>
-                <Typography sx={{ color: '#A1A1A6', fontSize: '0.9rem', lineHeight: 1.6, wordBreak: 'break-word' }}>
+                <Typography sx={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, wordBreak: 'break-word' }}>
                   {entry.message}
                 </Typography>
               </Box>

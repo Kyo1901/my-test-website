@@ -119,13 +119,13 @@ function HomePage() {
       ))}
 
       {/* Contact 섹션 */}
-      <Box sx={{ bgcolor: 'var(--color-bg-dark)', py: { xs: 8, md: 12 } }}>
+      <Box sx={{ bgcolor: 'var(--color-bg-primary)', py: { xs: 8, md: 12 } }}>
         <Container maxWidth="md">
           {/* 섹션 헤더 */}
           <Box sx={{ textAlign: 'center', mb: 6 }}>
             <Typography
               variant="overline"
-              sx={{ color: '#2997FF', fontWeight: 600, letterSpacing: 2 }}
+              sx={{ color: 'var(--color-primary)', fontWeight: 600, letterSpacing: 2 }}
             >
               Contact
             </Typography>
@@ -133,7 +133,7 @@ function HomePage() {
               sx={{
                 width: 40,
                 height: 3,
-                bgcolor: '#0071E3',
+                bgcolor: 'var(--color-primary)',
                 borderRadius: 2,
                 mx: 'auto',
                 mt: 1,
@@ -142,7 +142,7 @@ function HomePage() {
             />
             <Typography
               sx={{
-                color: '#6E6E73',
+                color: 'var(--color-text-secondary)',
                 fontSize: { xs: '0.9rem', md: '1rem' },
                 lineHeight: 1.6,
               }}
