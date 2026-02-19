@@ -3,19 +3,22 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
+import ContactInfo from '../components/landing/contact-info';
+import Guestbook from '../components/landing/guestbook';
 
 const sections = [
   {
     id: 'hero',
     title: 'Hero',
     description: '여기는 Hero 섹션입니다. 메인 비주얼, 이름, 간단 소개가 들어갈 예정입니다.',
-    dark: true,
+    dark: false,
   },
   {
     id: 'about',
     title: 'About Me',
     description: '여기는 About Me 섹션입니다. 간단한 자기소개와 \'더 알아보기\' 버튼이 들어갈 예정입니다.',
     dark: false,
+    alt: true,
     link: { label: '더 알아보기', to: '/about' },
   },
   {
@@ -23,26 +26,21 @@ const sections = [
     title: 'Skill Tree',
     description: '여기는 Skill Tree 섹션입니다. 기술 스택을 트리나 프로그레스바로 시각화할 예정입니다.',
     dark: false,
-    alt: true,
   },
   {
     id: 'projects',
     title: 'Projects',
     description: '여기는 Projects 섹션입니다. 대표작 썸네일 3-4개와 \'더 보기\' 버튼이 들어갈 예정입니다.',
     dark: false,
+    alt: true,
     link: { label: '더 보기', to: '/projects' },
-  },
-  {
-    id: 'contact',
-    title: 'Contact',
-    description: '여기는 Contact 섹션입니다. 연락처, SNS, 간단한 메시지 폼이 들어갈 예정입니다.',
-    dark: true,
   },
 ];
 
 function HomePage() {
   return (
     <Box>
+      {/* 플레이스홀더 섹션 (Hero ~ Projects) */}
       {sections.map((section) => (
         <Box
           key={section.id}
@@ -119,6 +117,47 @@ function HomePage() {
           </Container>
         </Box>
       ))}
+
+      {/* Contact 섹션 */}
+      <Box sx={{ bgcolor: 'var(--color-bg-dark)', py: { xs: 8, md: 12 } }}>
+        <Container maxWidth="md">
+          {/* 섹션 헤더 */}
+          <Box sx={{ textAlign: 'center', mb: 6 }}>
+            <Typography
+              variant="overline"
+              sx={{ color: '#2997FF', fontWeight: 600, letterSpacing: 2 }}
+            >
+              Contact
+            </Typography>
+            <Box
+              sx={{
+                width: 40,
+                height: 3,
+                bgcolor: '#0071E3',
+                borderRadius: 2,
+                mx: 'auto',
+                mt: 1,
+                mb: 2,
+              }}
+            />
+            <Typography
+              sx={{
+                color: '#6E6E73',
+                fontSize: { xs: '0.9rem', md: '1rem' },
+                lineHeight: 1.6,
+              }}
+            >
+              궁금한 점이 있으시면 편하게 연락주세요.
+            </Typography>
+          </Box>
+
+          {/* 연락처 + SNS */}
+          <ContactInfo />
+
+          {/* 방명록 */}
+          <Guestbook />
+        </Container>
+      </Box>
     </Box>
   );
 }
