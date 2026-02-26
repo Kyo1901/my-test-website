@@ -1,4 +1,4 @@
-name: Deploy my-portfolio to GitHub Pages
+name: Deploy mini_sns (PawLog) to GitHub Pages
 
 on:
   push:
@@ -25,14 +25,14 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: lecture1/my-portfolio/package-lock.json
+          cache-dependency-path: lecture1/mini_sns/package-lock.json
 
       - name: Install dependencies
-        working-directory: lecture1/my-portfolio
+        working-directory: lecture1/mini_sns
         run: npm ci
 
       - name: Build
-        working-directory: lecture1/my-portfolio
+        working-directory: lecture1/mini_sns
         run: npm run build
 
       - name: Setup Pages
@@ -41,7 +41,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'lecture1/my-portfolio/dist'
+          path: 'lecture1/mini_sns/dist'
 
       - name: Deploy to GitHub Pages
         id: deployment
