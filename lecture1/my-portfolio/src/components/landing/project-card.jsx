@@ -26,6 +26,7 @@ import ImageIcon from '@mui/icons-material/Image';
  */
 function ProjectCard({ project }) {
   const { title, description, tech_stack = [], detail_url, thumbnail_url, github_url } = project;
+  const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
   return (
@@ -53,24 +54,28 @@ function ProjectCard({ project }) {
           bgcolor: 'var(--color-bg-secondary)',
         }}
       >
-        {!imgError ? (
+        {/* 스켈레톤 (이미지 로딩 중일 때만 표시) */}
+        {!imgLoaded && !imgError && (
           <Box
-            component="img"
-            src={thumbnail_url}
-            alt={title}
-            onError={() => setImgError(true)}
             sx={{
               position: 'absolute',
               top: 0,
               left: 0,
               width: '100%',
               height: '100%',
-              objectFit: 'cover',
-              transition: 'transform 0.3s ease',
-              '&:hover': { transform: 'scale(1.03)' },
+              background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+              backgroundSize: '200% 100%',
+              animation: 'shimmer 1.5s infinite',
+              '@keyframes shimmer': {
+                '0%': { backgroundPosition: '200% 0' },
+                '100%': { backgroundPosition: '-200% 0' },
+              },
             }}
           />
-        ) : (
+        )}
+
+        {/* 에러 상태 */}
+        {imgError && (
           <Box
             sx={{
               position: 'absolute',
@@ -88,9 +93,31 @@ function ProjectCard({ project }) {
           >
             <ImageIcon sx={{ fontSize: 40, opacity: 0.4 }} />
             <Typography sx={{ fontSize: '0.75rem', opacity: 0.6 }}>
-              미리보기를 불러오는 중...
+              미리보기 없음
             </Typography>
           </Box>
+        )}
+
+        {/* 실제 이미지 */}
+        {!imgError && (
+          <Box
+            component="img"
+            src={thumbnail_url}
+            alt={title}
+            onLoad={() => setImgLoaded(true)}
+            onError={() => setImgError(true)}
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              opacity: imgLoaded ? 1 : 0,
+              transition: 'opacity 0.4s ease, transform 0.3s ease',
+              '&:hover': { transform: 'scale(1.03)' },
+            }}
+          />
         )}
       </Box>
 
