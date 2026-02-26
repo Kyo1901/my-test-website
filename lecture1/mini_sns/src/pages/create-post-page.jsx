@@ -18,7 +18,7 @@ import { supabase } from '../utils/supabase.js';
 import { useSession } from '../context/SessionContext.jsx';
 import BottomNav from '../components/common/BottomNav.jsx';
 
-const UNSPLASH_ACCESS_KEY = 'NTy4QLHpFEwM5wKvTdpAPjjXjVfV0XoHPfJ0tEBJOaY';
+const UNSPLASH_ACCESS_KEY = 'l2p3ycpBlDpngpb8czQwxbbQFMqwGeY8knDzQssRnHk';
 
 /**
  * 게시물 작성 페이지 (Unsplash 이미지 선택)

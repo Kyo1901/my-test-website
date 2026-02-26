@@ -23,7 +23,7 @@ const HomePage = () => {
   const fetchPosts = async () => {
     const { data } = await supabase
       .from('sns_posts')
-      .select('*, sns_users(id, username, display_name, profile_image)')
+      .select('*, sns_users(id, username, display_name, profile_image), sns_comments(count)')
       .order('created_at', { ascending: false })
       .limit(30);
     setPosts(data || []);

@@ -18,7 +18,7 @@ import { supabase } from '../../utils/supabase.js';
  * 피드 게시물 카드 컴포넌트
  *
  * Props:
- * @param {object} post - 게시물 데이터 (id, caption, image_url, likes_count, created_at, sns_users) [Required]
+ * @param {object} post - 게시물 데이터 (id, caption, image_url, likes_count, created_at, sns_users, sns_comments) [Required]
  * @param {function} onLikeUpdate - 좋아요 수 업데이트 콜백 [Optional]
  *
  * Example usage:
@@ -102,6 +102,9 @@ const PostCard = ({ post, onLikeUpdate }) => {
         <IconButton sx={{ p: '6px' }}>
           <ChatBubbleOutlineIcon sx={{ color: '#555', fontSize: 24 }} />
         </IconButton>
+        <Typography variant='body2' fontWeight={600}>
+          { post.sns_comments?.[0]?.count ?? 0 }
+        </Typography>
       </CardActions>
 
       { post.caption && (
