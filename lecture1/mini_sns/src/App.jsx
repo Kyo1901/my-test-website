@@ -14,7 +14,7 @@ const App = () => {
   const { user } = useSession();
 
   return (
-    <BrowserRouter basename='/my-test-website'>
+    <BrowserRouter basename='/mini-sns'>
       <Routes>
         <Route path='/login' element={<LoginPage />} />
         <Route path='/' element={ user ? <HomePage /> : <Navigate to='/login' replace /> } />
