@@ -10,7 +10,7 @@ import Alert from '@mui/material/Alert';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { supabase } from '../utils/supabase.js';
-import useSession from '../hooks/useSession.js';
+import { useSession } from '../context/SessionContext.jsx';
 
 /**
  * 로그인 / 회원가입 페이지
@@ -43,6 +43,11 @@ const LoginPage = () => {
       .single();
 
     if (dbErr || !data) {
+      setError('이메일 또는 비밀번호가 올바르지 않습니다.');
+      setLoading(false);
+      return;
+    }
+    if (data.password !== btoa(form.password)) {
       setError('이메일 또는 비밀번호가 올바르지 않습니다.');
       setLoading(false);
       return;

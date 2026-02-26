@@ -17,7 +17,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SendIcon from '@mui/icons-material/Send';
 import { supabase } from '../utils/supabase.js';
 import CommentItem from '../components/ui/CommentItem.jsx';
-import useSession from '../hooks/useSession.js';
+import { useSession } from '../context/SessionContext.jsx';
 
 /**
  * 게시물 상세 페이지

@@ -15,7 +15,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { supabase } from '../utils/supabase.js';
-import useSession from '../hooks/useSession.js';
+import { useSession } from '../context/SessionContext.jsx';
 import BottomNav from '../components/common/BottomNav.jsx';
 
 const UNSPLASH_ACCESS_KEY = 'NTy4QLHpFEwM5wKvTdpAPjjXjVfV0XoHPfJ0tEBJOaY';

@@ -14,7 +14,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { supabase } from '../utils/supabase.js';
-import useSession from '../hooks/useSession.js';
+import { useSession } from '../context/SessionContext.jsx';
 import BottomNav from '../components/common/BottomNav.jsx';
 
 /**

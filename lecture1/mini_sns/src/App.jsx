@@ -5,7 +5,7 @@ import PostDetailPage from './pages/post-detail-page.jsx';
 import CreatePostPage from './pages/create-post-page.jsx';
 import SearchPage from './pages/search-page.jsx';
 import ProfilePage from './pages/profile-page.jsx';
-import useSession from './hooks/useSession.js';
+import { useSession } from './context/SessionContext.jsx';
 
 /**
  * 앱 루트 컴포넌트 — React Router 설정
