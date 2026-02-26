@@ -1,10 +1,14 @@
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import { Link } from 'react-router-dom';
 import ContactInfo from '../components/landing/contact-info';
 import Guestbook from '../components/landing/guestbook';
+import ProjectCard from '../components/landing/project-card';
+import { supabase } from '../utils/supabase-client';
 
 const sections = [
   {
@@ -27,20 +31,31 @@ const sections = [
     description: '여기는 Skill Tree 섹션입니다. 기술 스택을 트리나 프로그레스바로 시각화할 예정입니다.',
     dark: false,
   },
-  {
-    id: 'projects',
-    title: 'Projects',
-    description: '여기는 Projects 섹션입니다. 대표작 썸네일 3-4개와 \'더 보기\' 버튼이 들어갈 예정입니다.',
-    dark: false,
-    alt: true,
-    link: { label: '더 보기', to: '/projects' },
-  },
 ];
 
 function HomePage() {
+  const [featuredProjects, setFeaturedProjects] = useState([]);
+  const [isProjectsLoading, setIsProjectsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeaturedProjects = async () => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('is_published', true)
+        .order('sort_order', { ascending: true })
+        .limit(3);
+
+      if (!error && data) setFeaturedProjects(data);
+      setIsProjectsLoading(false);
+    };
+
+    fetchFeaturedProjects();
+  }, []);
+
   return (
     <Box>
-      {/* 플레이스홀더 섹션 (Hero ~ Projects) */}
+      {/* 플레이스홀더 섹션 (Hero / About Me / Skill Tree) */}
       {sections.map((section) => (
         <Box
           key={section.id}
@@ -117,6 +132,98 @@ function HomePage() {
           </Container>
         </Box>
       ))}
+
+      {/* Projects 프리뷰 섹션 */}
+      <Box sx={{ bgcolor: 'var(--color-bg-secondary)', py: { xs: 8, md: 12 } }}>
+        <Container maxWidth="lg">
+          {/* 섹션 헤더 */}
+          <Box sx={{ textAlign: 'center', mb: { xs: 5, md: 7 } }}>
+            <Typography
+              variant="overline"
+              sx={{ color: 'var(--color-primary)', fontWeight: 600, letterSpacing: 2 }}
+            >
+              Projects
+            </Typography>
+            <Box
+              sx={{
+                width: 40,
+                height: 3,
+                bgcolor: 'var(--color-primary)',
+                borderRadius: 2,
+                mx: 'auto',
+                mt: 1,
+                mb: 2,
+              }}
+            />
+            <Typography
+              variant="h5"
+              sx={{
+                color: 'var(--color-text-primary)',
+                fontWeight: 600,
+                fontSize: { xs: '1.2rem', md: '1.5rem' },
+                mb: 1,
+              }}
+            >
+              대표 프로젝트
+            </Typography>
+            <Typography
+              sx={{
+                color: 'var(--color-text-secondary)',
+                fontSize: { xs: '0.9rem', md: '1rem' },
+                lineHeight: 1.6,
+              }}
+            >
+              직접 기획하고 개발한 프로젝트들입니다.
+            </Typography>
+          </Box>
+
+          {/* 프로젝트 카드 그리드 */}
+          {isProjectsLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+              <CircularProgress sx={{ color: 'var(--color-primary)' }} />
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: {
+                  xs: '1fr',
+                  sm: 'repeat(2, 1fr)',
+                  lg: 'repeat(3, 1fr)',
+                },
+                gap: 3,
+                mb: 5,
+              }}
+            >
+              {featuredProjects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
+            </Box>
+          )}
+
+          {/* 더 보기 버튼 */}
+          <Box sx={{ textAlign: 'center' }}>
+            <Button
+              component={Link}
+              to="/projects"
+              variant="contained"
+              sx={{
+                bgcolor: 'var(--color-button-primary)',
+                color: '#FFFFFF',
+                borderRadius: '980px',
+                textTransform: 'none',
+                px: 4,
+                py: 1,
+                fontSize: '0.9rem',
+                boxShadow: 'none',
+                '&:hover': { bgcolor: 'var(--color-button-hover)', boxShadow: 'none' },
+              }}
+            >
+              전체 프로젝트 보기 &rsaquo;
+            </Button>
+          </Box>
+        </Container>
+      </Box>
 
       {/* Contact 섹션 */}
       <Box sx={{ bgcolor: 'var(--color-bg-primary)', py: { xs: 8, md: 12 } }}>
