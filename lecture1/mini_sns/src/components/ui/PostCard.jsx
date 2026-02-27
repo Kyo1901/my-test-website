@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -12,22 +11,22 @@ import Box from '@mui/material/Box';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import { supabase } from '../../utils/supabase.js';
+import { useSession } from '../../context/SessionContext.jsx';
+import useLike from '../../hooks/useLike.js';
 
 /**
  * 피드 게시물 카드 컴포넌트
  *
  * Props:
  * @param {object} post - 게시물 데이터 (id, caption, image_url, likes_count, created_at, sns_users, sns_comments) [Required]
- * @param {function} onLikeUpdate - 좋아요 수 업데이트 콜백 [Optional]
  *
  * Example usage:
- * <PostCard post={post} onLikeUpdate={handleUpdate} />
+ * <PostCard post={post} />
  */
-const PostCard = ({ post, onLikeUpdate }) => {
+const PostCard = ({ post }) => {
   const navigate = useNavigate();
-  const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(post.likes_count || 0);
+  const { user } = useSession();
+  const { liked, likesCount, toggleLike } = useLike(post.id, post.likes_count, user?.id);
 
   const author = post.sns_users || {};
   const avatarLetter = (author.display_name || 'U')[0];
@@ -37,18 +36,6 @@ const PostCard = ({ post, onLikeUpdate }) => {
     if (diff < 3600) return `${Math.floor(diff / 60)}분 전`;
     if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`;
     return `${Math.floor(diff / 86400)}일 전`;
-  };
-
-  const handleLike = async (e) => {
-    e.stopPropagation();
-    const newCount = liked ? likesCount - 1 : likesCount + 1;
-    setLiked(!liked);
-    setLikesCount(newCount);
-    await supabase
-      .from('sns_posts')
-      .update({ likes_count: newCount })
-      .eq('id', post.id);
-    if (onLikeUpdate) onLikeUpdate(post.id, newCount);
   };
 
   const handleCardClick = () => {
@@ -90,7 +77,7 @@ const PostCard = ({ post, onLikeUpdate }) => {
       )}
 
       <CardActions sx={{ px: 2, pt: 1, pb: 0 }}>
-        <IconButton onClick={handleLike} sx={{ p: '6px' }}>
+        <IconButton onClick={toggleLike} sx={{ p: '6px' }} disabled={!user}>
           { liked
             ? <FavoriteIcon sx={{ color: '#E53935', fontSize: 26 }} />
             : <FavoriteBorderIcon sx={{ color: '#555', fontSize: 26 }} />

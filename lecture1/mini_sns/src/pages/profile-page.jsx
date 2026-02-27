@@ -13,9 +13,13 @@ import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LogoutIcon from '@mui/icons-material/Logout';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { supabase } from '../utils/supabase.js';
 import { useSession } from '../context/SessionContext.jsx';
+import useFollow from '../hooks/useFollow.js';
 import BottomNav from '../components/common/BottomNav.jsx';
+import PetCardSlider from '../components/ui/PetCardSlider.jsx';
+import PetFormModal from '../components/ui/PetFormModal.jsx';
 
 /**
  * 마이페이지 / 사용자 프로필 페이지
@@ -28,10 +32,18 @@ const ProfilePage = () => {
   const { user: currentUser, logout } = useSession();
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
+  const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [petModalOpen, setPetModalOpen] = useState(false);
+  const [editingPet, setEditingPet] = useState(null);
 
-  const targetId = userId || currentUser?.id;
+  const targetId = userId ? Number(userId) : currentUser?.id;
   const isMyPage = !userId || Number(userId) === currentUser?.id;
+
+  const { isFollowing, followerCount, followingCount, toggleFollow, loading: followLoading } = useFollow(
+    targetId,
+    currentUser?.id
+  );
 
   useEffect(() => {
     if (!targetId) {
@@ -39,19 +51,19 @@ const ProfilePage = () => {
       return;
     }
     const fetchProfile = async () => {
-      const { data: userData } = await supabase
-        .from('sns_users')
-        .select('*')
-        .eq('id', targetId)
-        .single();
-      setProfile(userData);
-
-      const { data: postData } = await supabase
-        .from('sns_posts')
-        .select('id, image_url, likes_count, created_at')
-        .eq('user_id', targetId)
-        .order('created_at', { ascending: false });
-      setPosts(postData || []);
+      const [userRes, postRes, petRes] = await Promise.all([
+        supabase.from('sns_users').select('*').eq('id', targetId).single(),
+        supabase
+          .from('sns_posts')
+          .select('id, image_url, likes_count, created_at')
+          .eq('user_id', targetId)
+          .eq('is_deleted', 0)
+          .order('created_at', { ascending: false }),
+        supabase.from('sns_pets').select('*').eq('user_id', targetId).order('created_at'),
+      ]);
+      setProfile(userRes.data);
+      setPosts(postRes.data || []);
+      setPets(petRes.data || []);
       setLoading(false);
     };
     fetchProfile();
@@ -60,6 +72,18 @@ const ProfilePage = () => {
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handlePetSaved = async () => {
+    const { data } = await supabase.from('sns_pets').select('*').eq('user_id', targetId).order('created_at');
+    setPets(data || []);
+    setPetModalOpen(false);
+    setEditingPet(null);
+  };
+
+  const handlePetDelete = async (petId) => {
+    await supabase.from('sns_pets').delete().eq('id', petId);
+    setPets((prev) => prev.filter((p) => p.id !== petId));
   };
 
   if (loading) {
@@ -132,8 +156,8 @@ const ProfilePage = () => {
         >
           { [
             { label: '게시물', value: posts.length },
-            { label: '팔로워', value: Math.floor(Math.random() * 300 + 50) },
-            { label: '팔로잉', value: Math.floor(Math.random() * 100 + 10) },
+            { label: '팔로워', value: followerCount },
+            { label: '팔로잉', value: followingCount },
           ].map((stat) => (
             <Box key={stat.label} sx={{ textAlign: 'center' }}>
               <Typography variant='h6' fontWeight={700}>{ stat.value }</Typography>
@@ -144,13 +168,39 @@ const ProfilePage = () => {
 
         { !isMyPage && (
           <Button
-            variant='contained'
+            variant={ isFollowing ? 'outlined' : 'contained' }
             fullWidth
+            onClick={toggleFollow}
+            disabled={followLoading}
             sx={{ mb: 2, py: 1 }}
           >
-            팔로우
+            { isFollowing ? '팔로잉 ✓' : '팔로우' }
           </Button>
         )}
+
+        {/* 반려동물 카드 슬라이드 */}
+        <Box sx={{ mb: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+            <Typography variant='subtitle2' fontWeight={700}>
+              🐾 반려동물
+            </Typography>
+            { isMyPage && (
+              <IconButton
+                size='small'
+                onClick={() => { setEditingPet(null); setPetModalOpen(true); }}
+                sx={{ color: '#FF8C42' }}
+              >
+                <AddCircleOutlineIcon fontSize='small' />
+              </IconButton>
+            )}
+          </Box>
+          <PetCardSlider
+            pets={pets}
+            isMyPage={isMyPage}
+            onEdit={(pet) => { setEditingPet(pet); setPetModalOpen(true); }}
+            onDelete={handlePetDelete}
+          />
+        </Box>
 
         <Divider sx={{ mb: 1 }} />
 
@@ -211,6 +261,17 @@ const ProfilePage = () => {
       </Container>
 
       <BottomNav />
+
+      {/* 반려동물 등록/수정 모달 */}
+      { petModalOpen && (
+        <PetFormModal
+          open={petModalOpen}
+          onClose={() => { setPetModalOpen(false); setEditingPet(null); }}
+          onSaved={handlePetSaved}
+          pet={editingPet}
+          userId={currentUser?.id}
+        />
+      )}
     </Box>
   );
 };

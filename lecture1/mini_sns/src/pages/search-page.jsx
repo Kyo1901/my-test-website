@@ -29,18 +29,56 @@ const SearchPage = () => {
 
   const fetchPosts = async (keyword = '') => {
     setLoading(true);
-    let query = supabase
-      .from('sns_posts')
-      .select('id, image_url, caption, likes_count')
-      .order('likes_count', { ascending: false })
-      .limit(30);
+    const cleanKeyword = keyword.replace('#', '').trim();
 
-    if (keyword) {
-      query = query.ilike('caption', `%${keyword}%`);
+    if (cleanKeyword) {
+      // 해시태그 테이블 먼저 검색
+      const { data: hashtagData } = await supabase
+        .from('sns_hashtags')
+        .select('id')
+        .ilike('tag_name', `%${cleanKeyword}%`)
+        .limit(10);
+
+      if (hashtagData && hashtagData.length > 0) {
+        const hashtagIds = hashtagData.map((h) => h.id);
+        const { data: linkData } = await supabase
+          .from('sns_post_hashtags')
+          .select('post_id')
+          .in('hashtag_id', hashtagIds);
+        const postIds = [...new Set((linkData || []).map((l) => l.post_id))];
+
+        if (postIds.length > 0) {
+          const { data } = await supabase
+            .from('sns_posts')
+            .select('id, image_url, caption, likes_count')
+            .in('id', postIds)
+            .eq('is_deleted', 0)
+            .order('likes_count', { ascending: false })
+            .limit(30);
+          setPosts(data || []);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // 해시태그 없으면 caption 텍스트 검색
+      const { data } = await supabase
+        .from('sns_posts')
+        .select('id, image_url, caption, likes_count')
+        .ilike('caption', `%${cleanKeyword}%`)
+        .eq('is_deleted', 0)
+        .order('likes_count', { ascending: false })
+        .limit(30);
+      setPosts(data || []);
+    } else {
+      const { data } = await supabase
+        .from('sns_posts')
+        .select('id, image_url, caption, likes_count')
+        .eq('is_deleted', 0)
+        .order('likes_count', { ascending: false })
+        .limit(30);
+      setPosts(data || []);
     }
-
-    const { data } = await query;
-    setPosts(data || []);
     setLoading(false);
   };
 

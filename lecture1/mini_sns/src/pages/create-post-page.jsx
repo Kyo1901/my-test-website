@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -11,17 +11,23 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
+import Chip from '@mui/material/Chip';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import PetsIcon from '@mui/icons-material/Pets';
 import { supabase } from '../utils/supabase.js';
 import { useSession } from '../context/SessionContext.jsx';
+import { parseHashtags, saveHashtags } from '../utils/hashtag.js';
 import BottomNav from '../components/common/BottomNav.jsx';
 
 const UNSPLASH_ACCESS_KEY = 'l2p3ycpBlDpngpb8czQwxbbQFMqwGeY8knDzQssRnHk';
 
 /**
- * 게시물 작성 페이지 (Unsplash 이미지 선택)
+ * 게시물 작성 페이지 (Unsplash 이미지 선택 + 해시태그 + 반려동물 태그)
  *
  * Props: 없음 (라우터로 접근)
  */
@@ -31,18 +37,36 @@ const CreatePostPage = () => {
   const [caption, setCaption] = useState('');
   const [images, setImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [query, setQuery] = useState('pet dog cat');
   const [searchInput, setSearchInput] = useState('');
   const [loadingImages, setLoadingImages] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [pets, setPets] = useState([]);
+  const [selectedPetIds, setSelectedPetIds] = useState([]);
+  const [parsedTags, setParsedTags] = useState([]);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('sns_pets')
+      .select('id, name, species')
+      .eq('user_id', user.id)
+      .then(({ data }) => setPets(data || []));
+  }, [user]);
+
+  const handleCaptionChange = (e) => {
+    const val = e.target.value;
+    setCaption(val);
+    setParsedTags(parseHashtags(val));
+  };
 
   const fetchImages = async (searchQuery) => {
     setLoadingImages(true);
     setSelectedImage(null);
     try {
+      const q = searchQuery.trim() || 'pet dog cat';
       const res = await fetch(
-        `https://api.unsplash.com/photos/random?count=9&query=${encodeURIComponent(searchQuery)}&client_id=${UNSPLASH_ACCESS_KEY}`
+        `https://api.unsplash.com/photos/random?count=9&query=${encodeURIComponent(q)}&client_id=${UNSPLASH_ACCESS_KEY}`
       );
       const data = await res.json();
       const urls = Array.isArray(data) ? data.map((img) => ({
@@ -58,9 +82,13 @@ const CreatePostPage = () => {
   };
 
   const handleSearch = () => {
-    const q = searchInput.trim() || 'pet dog cat';
-    setQuery(q);
-    fetchImages(q);
+    fetchImages(searchInput);
+  };
+
+  const handlePetToggle = (petId) => {
+    setSelectedPetIds((prev) =>
+      prev.includes(petId) ? prev.filter((id) => id !== petId) : [...prev, petId]
+    );
   };
 
   const handleSubmit = async () => {
@@ -73,18 +101,37 @@ const CreatePostPage = () => {
       return;
     }
     setSubmitting(true);
-    const { error: dbErr } = await supabase.from('sns_posts').insert([{
-      user_id: user.id,
-      caption: caption.trim(),
-      image_url: selectedImage?.url || null,
-      likes_count: 0,
-    }]);
 
-    if (dbErr) {
+    const { data: newPost, error: dbErr } = await supabase
+      .from('sns_posts')
+      .insert([{
+        user_id: user.id,
+        caption: caption.trim(),
+        image_url: selectedImage?.url || null,
+        likes_count: 0,
+      }])
+      .select()
+      .single();
+
+    if (dbErr || !newPost) {
       setError('게시물 저장에 실패했습니다.');
       setSubmitting(false);
       return;
     }
+
+    // 해시태그 저장
+    const tags = parseHashtags(caption);
+    if (tags.length > 0) {
+      await saveHashtags(newPost.id, tags);
+    }
+
+    // 반려동물 태그 저장
+    if (selectedPetIds.length > 0) {
+      await supabase
+        .from('sns_post_pet_tags')
+        .insert(selectedPetIds.map((petId) => ({ post_id: newPost.id, pet_id: petId })));
+    }
+
     navigate('/');
   };
 
@@ -123,16 +170,54 @@ const CreatePostPage = () => {
         <TextField
           placeholder='반려동물의 하루를 공유해보세요! #해시태그 사용 가능'
           value={caption}
-          onChange={(e) => setCaption(e.target.value)}
+          onChange={handleCaptionChange}
           multiline
           rows={3}
           fullWidth
-          sx={{ mb: 3 }}
+          sx={{ mb: 1 }}
         />
+        {/* 해시태그 미리보기 */}
+        { parsedTags.length > 0 && (
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
+            { parsedTags.map((tag) => (
+              <Chip key={tag} label={`#${tag}`} size='small' sx={{ bgcolor: '#FFF0E4', color: '#E06A1E', fontWeight: 600 }} />
+            ))}
+          </Box>
+        )}
 
-        {/* 2단계: 이미지 검색 */}
+        {/* 2단계: 반려동물 태그 */}
+        { pets.length > 0 && (
+          <>
+            <Typography variant='subtitle2' fontWeight={700} sx={{ mb: 1 }}>
+              2단계 — 반려동물 태그 <PetsIcon sx={{ fontSize: 16, verticalAlign: 'middle', color: '#FF8C42' }} />
+            </Typography>
+            <FormGroup row sx={{ mb: 2.5, flexWrap: 'wrap', gap: 0.5 }}>
+              { pets.map((pet) => (
+                <FormControlLabel
+                  key={pet.id}
+                  control={
+                    <Checkbox
+                      checked={selectedPetIds.includes(pet.id)}
+                      onChange={() => handlePetToggle(pet.id)}
+                      size='small'
+                      sx={{ color: '#FF8C42', '&.Mui-checked': { color: '#FF8C42' } }}
+                    />
+                  }
+                  label={
+                    <Typography variant='body2'>
+                      { pet.species === '강아지' ? '🐶' : pet.species === '고양이' ? '🐱' : '🐹' } { pet.name }
+                    </Typography>
+                  }
+                  sx={{ bgcolor: '#fff', border: '1px solid #f0e8e0', borderRadius: 2, px: 1, m: 0 }}
+                />
+              ))}
+            </FormGroup>
+          </>
+        )}
+
+        {/* 3단계: 이미지 검색 */}
         <Typography variant='subtitle2' fontWeight={700} sx={{ mb: 1 }}>
-          2단계 — 이미지 탐색 (Unsplash)
+          { pets.length > 0 ? '3단계' : '2단계' } — 이미지 탐색 (Unsplash)
         </Typography>
         <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
           <TextField
@@ -211,7 +296,7 @@ const CreatePostPage = () => {
         { selectedImage && (
           <Box sx={{ mb: 2 }}>
             <Typography variant='subtitle2' fontWeight={700} sx={{ mb: 1 }}>
-              3단계 — 선택된 이미지
+              선택된 이미지
             </Typography>
             <Box
               component='img'
