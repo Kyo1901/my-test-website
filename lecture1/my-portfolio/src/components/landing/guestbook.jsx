@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import { supabase } from '../../utils/supabase-client';
+import AnimatedListItem from '../ui/animated-list-item';
 
 /**
  * Guestbook 컴포넌트
@@ -217,50 +219,53 @@ function Guestbook() {
         </Typography>
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {entries.map((entry) => (
-            <Box
-              key={entry.id}
-              sx={{
-                display: 'flex',
-                gap: 2,
-                p: 2.5,
-                bgcolor: 'var(--color-bg-primary)',
-                border: '1px solid var(--color-border-light)',
-                borderRadius: 2,
-              }}
-            >
-              {/* 이모지 */}
-              <Box
-                sx={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: '50%',
-                  bgcolor: 'var(--color-bg-secondary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1.3rem',
-                  flexShrink: 0,
-                }}
-              >
-                {entry.emoji}
-              </Box>
-              {/* 내용 */}
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                  <Typography sx={{ color: 'var(--color-text-primary)', fontWeight: 600, fontSize: '0.9rem' }}>
-                    {entry.name}
-                  </Typography>
-                  <Typography sx={{ color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>
-                    {formatDate(entry.created_at)}
-                  </Typography>
+          <AnimatePresence initial={false}>
+            {entries.map((entry) => (
+              <AnimatedListItem key={entry.id}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    gap: 2,
+                    p: 2.5,
+                    bgcolor: 'var(--color-bg-primary)',
+                    border: '1px solid var(--color-border-light)',
+                    borderRadius: 2,
+                  }}
+                >
+                  {/* 이모지 */}
+                  <Box
+                    sx={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: '50%',
+                      bgcolor: 'var(--color-bg-secondary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.3rem',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {entry.emoji}
+                  </Box>
+                  {/* 내용 */}
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                      <Typography sx={{ color: 'var(--color-text-primary)', fontWeight: 600, fontSize: '0.9rem' }}>
+                        {entry.name}
+                      </Typography>
+                      <Typography sx={{ color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>
+                        {formatDate(entry.created_at)}
+                      </Typography>
+                    </Box>
+                    <Typography sx={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, wordBreak: 'break-word' }}>
+                      {entry.message}
+                    </Typography>
+                  </Box>
                 </Box>
-                <Typography sx={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, wordBreak: 'break-word' }}>
-                  {entry.message}
-                </Typography>
-              </Box>
-            </Box>
-          ))}
+              </AnimatedListItem>
+            ))}
+          </AnimatePresence>
         </Box>
       )}
     </Box>
