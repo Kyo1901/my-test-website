@@ -8,7 +8,7 @@ import ProjectsPage from './pages/projects-page.jsx';
 
 function App() {
   return (
-    <BrowserRouter basename="/my-test-website">
+    <BrowserRouter basename="/">
       <Box sx={{ width: '100%', minHeight: '100vh' }}>
         <ScrollProgressBar />
         <Navbar />
