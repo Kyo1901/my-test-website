@@ -15,6 +15,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import SchoolIcon from '@mui/icons-material/School';
 import WorkIcon from '@mui/icons-material/Work';
 import SkillSection from '../components/landing/skill-section';
+import ScrollReveal from '../components/ui/scroll-reveal';
 import { usePortfolio } from '../utils/portfolio-context';
 
 function AboutPage() {
@@ -57,13 +58,13 @@ function AboutPage() {
         </Box>
 
         {/* 기본 정보 카드 */}
+        <ScrollReveal>
         <Card
           sx={{
             mb: 5,
             border: '1px solid var(--color-border-light)',
             boxShadow: 'none',
             borderRadius: 3,
-            animation: 'fadeInUp 0.5s ease forwards',
           }}
         >
           <CardContent sx={{ p: { xs: 3, md: 4 } }}>
@@ -124,13 +125,17 @@ function AboutPage() {
             </Grid>
           </CardContent>
         </Card>
+        </ScrollReveal>
 
         {/* 기술 스택 */}
-        <SkillSection />
+        <ScrollReveal delay={0.05}>
+          <SkillSection />
+        </ScrollReveal>
 
         {/* 콘텐츠 섹션 아코디언 */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, mt: 1.5 }}>
-          { sections.map((section) => (
+          { sections.map((section, index) => (
+            <ScrollReveal key={ section.id } delay={ index * 0.1 }>
             <Accordion
               key={ section.id }
               expanded={ expanded === section.id }
@@ -196,6 +201,7 @@ function AboutPage() {
                 </Typography>
               </AccordionDetails>
             </Accordion>
+            </ScrollReveal>
           )) }
         </Box>
       </Container>

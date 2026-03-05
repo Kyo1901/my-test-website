@@ -12,6 +12,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Link } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/Person';
 import HeroSection from '../components/landing/hero-section';
+import ScrollReveal from '../components/ui/scroll-reveal';
 import ContactInfo from '../components/landing/contact-info';
 import Guestbook from '../components/landing/guestbook';
 import ProjectCard from '../components/landing/project-card';
@@ -110,9 +111,11 @@ function HomePage() {
       {/* About Me 섹션 */}
       <Box id="section-about" sx={{ bgcolor: 'var(--color-bg-secondary)', py: { xs: 8, md: 12 } }}>
         <Container maxWidth="md">
-          <SectionHeader label="About Me" />
+          <ScrollReveal>
+            <SectionHeader label="About Me" />
+          </ScrollReveal>
 
-          <Box sx={{ animation: 'fadeInUp 0.5s ease forwards' }}>
+          <ScrollReveal delay={0.1}>
             <Grid container spacing={4} alignItems="flex-start">
               {/* 개발 스토리 요약 */}
               <Grid size={{ xs: 12, md: 7 }}>
@@ -257,21 +260,24 @@ function HomePage() {
       {/* Skill Tree 섹션 */}
       <Box sx={{ bgcolor: 'var(--color-bg-primary)', py: { xs: 8, md: 12 } }}>
         <Container maxWidth="md">
-          <SectionHeader label="Skill Tree" description="주요 기술 스택입니다." />
+          <ScrollReveal>
+            <SectionHeader label="Skill Tree" description="주요 기술 스택입니다." />
+          </ScrollReveal>
 
           <Grid
             container
             spacing={2}
-            sx={{ mb: 5, animation: 'fadeInUp 0.5s ease 0.1s forwards', opacity: 0 }}
+            sx={{ mb: 5 }}
             aria-label="주요 기술 스택 목록"
           >
-            { topSkills.map((skill) => {
+            { topSkills.map((skill, index) => {
               const meta = getCategoryMeta(skill.category);
               const abbr = skill.name.length <= 3
                 ? skill.name.toUpperCase()
                 : skill.name.slice(0, 3).toUpperCase();
               return (
                 <Grid key={ skill.id } size={{ xs: 6, sm: 3 }}>
+                  <ScrollReveal variant="scaleUp" delay={ index * 0.1 }>
                   <Box
                     sx={{
                       textAlign: 'center',
@@ -318,6 +324,7 @@ function HomePage() {
                       { skill.level }%
                     </Typography>
                   </Box>
+                  </ScrollReveal>
                 </Grid>
               );
             }) }
@@ -353,11 +360,13 @@ function HomePage() {
       {/* Projects 프리뷰 섹션 */}
       <Box id="section-projects" sx={{ bgcolor: 'var(--color-bg-secondary)', py: { xs: 8, md: 12 } }}>
         <Container maxWidth="lg">
-          <SectionHeader
-            label="Projects"
-            title="대표 프로젝트"
-            description="직접 기획하고 개발한 프로젝트들입니다."
-          />
+          <ScrollReveal>
+            <SectionHeader
+              label="Projects"
+              title="대표 프로젝트"
+              description="직접 기획하고 개발한 프로젝트들입니다."
+            />
+          </ScrollReveal>
 
           { isProjectsLoading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
@@ -378,8 +387,15 @@ function HomePage() {
                 mb: 5,
               }}
             >
-              { featuredProjects.map((project) => (
-                <ProjectCard key={ project.id } project={ project } />
+              { featuredProjects.map((project, index) => (
+                <ScrollReveal
+                  key={ project.id }
+                  variant="scaleUp"
+                  delay={ index * 0.12 }
+                  sx={{ display: 'flex', flexDirection: 'column' }}
+                >
+                  <ProjectCard project={ project } />
+                </ScrollReveal>
               )) }
             </Box>
           ) }
@@ -411,9 +427,15 @@ function HomePage() {
       {/* Contact 섹션 */}
       <Box id="section-contact" sx={{ bgcolor: 'var(--color-bg-primary)', py: { xs: 8, md: 12 } }}>
         <Container maxWidth="md">
-          <SectionHeader label="Contact" description="궁금한 점이 있으시면 편하게 연락주세요." />
-          <ContactInfo />
-          <Guestbook />
+          <ScrollReveal>
+            <SectionHeader label="Contact" description="궁금한 점이 있으시면 편하게 연락주세요." />
+          </ScrollReveal>
+          <ScrollReveal delay={0.1}>
+            <ContactInfo />
+          </ScrollReveal>
+          <ScrollReveal delay={0.2}>
+            <Guestbook />
+          </ScrollReveal>
         </Container>
       </Box>
     </Box>

@@ -4,6 +4,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import ProjectCard from '../components/landing/project-card';
+import ScrollReveal from '../components/ui/scroll-reveal';
 import { supabase } from '../utils/supabase-client';
 
 function ProjectsPage() {
@@ -35,6 +36,7 @@ function ProjectsPage() {
     >
       <Container maxWidth="lg">
         {/* 섹션 헤더 */}
+        <ScrollReveal>
         <Box sx={{ textAlign: 'center', mb: { xs: 5, md: 8 } }}>
           <Typography
             variant="overline"
@@ -74,6 +76,7 @@ function ProjectsPage() {
             직접 기획하고 개발한 프로젝트들을 소개합니다.
           </Typography>
         </Box>
+        </ScrollReveal>
 
         {/* 로딩 */}
         {isLoading ? (
@@ -104,8 +107,15 @@ function ProjectsPage() {
               gap: 3,
             }}
           >
-            {projects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+            {projects.map((project, index) => (
+              <ScrollReveal
+                key={project.id}
+                variant="scaleUp"
+                delay={ Math.min(index * 0.1, 0.4) }
+                sx={{ display: 'flex', flexDirection: 'column' }}
+              >
+                <ProjectCard project={project} />
+              </ScrollReveal>
             ))}
           </Box>
         )}

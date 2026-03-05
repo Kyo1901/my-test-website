@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useParallaxOffset } from '../../hooks/use-scroll-animation';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -26,6 +27,10 @@ function HeroSection() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));    // 0 ~ 599px
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'lg')); // 600 ~ 1199px
+
+  /** 패럴렉스: 글로우(빠름) vs 도트 그리드(느림) 속도 차이로 깊이감 표현 */
+  const glowOffset = useParallaxOffset(0.12);
+  const dotOffset = useParallaxOffset(0.04);
 
   const [displayText, setDisplayText] = useState('');
   const [isTypingDone, setIsTypingDone] = useState(false);
@@ -81,6 +86,7 @@ function HeroSection() {
         /* 개발자 감성 격자 도트 패턴 배경 */
         backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)',
         backgroundSize: { xs: '24px 24px', md: '32px 32px' },
+        backgroundPosition: `center ${-dotOffset}px`,
       }}
     >
       {/* 상단 그라데이션 포인트 — 은은한 블루 글로우 */}
@@ -90,12 +96,12 @@ function HeroSection() {
           position: 'absolute',
           top: '-20%',
           left: '50%',
-          transform: 'translateX(-50%)',
           width: { xs: '260px', sm: '380px', lg: '500px' },
           height: { xs: '260px', sm: '380px', lg: '500px' },
           borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(0, 113, 227, 0.12) 0%, transparent 70%)',
           pointerEvents: 'none',
+          transform: `translate3d(-50%, ${-glowOffset}px, 0)`,
         }}
       />
 

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Navbar from './components/common/navbar.jsx';
+import ScrollProgressBar from './components/common/scroll-progress-bar.jsx';
 import HomePage from './pages/home-page.jsx';
 import AboutPage from './pages/about-page.jsx';
 import ProjectsPage from './pages/projects-page.jsx';
@@ -9,6 +10,7 @@ function App() {
   return (
     <BrowserRouter basename="/my-test-website">
       <Box sx={{ width: '100%', minHeight: '100vh' }}>
+        <ScrollProgressBar />
         <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
