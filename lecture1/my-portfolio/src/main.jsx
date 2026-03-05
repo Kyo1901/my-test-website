@@ -5,15 +5,18 @@ import CssBaseline from '@mui/material/CssBaseline';
 import App from './App.jsx';
 import theme from './theme.js';
 import { PortfolioProvider } from './utils/portfolio-context.jsx';
+import ErrorBoundary from './components/common/error-boundary.jsx';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <PortfolioProvider>
-        <App />
-      </PortfolioProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <PortfolioProvider>
+          <App />
+        </PortfolioProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   </React.StrictMode>,
 );
