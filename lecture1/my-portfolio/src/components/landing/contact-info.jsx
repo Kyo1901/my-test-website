@@ -5,8 +5,6 @@ import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import EmailIcon from '@mui/icons-material/Email';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import InstagramIcon from '@mui/icons-material/Instagram';
 
 /**
  * ContactInfo 컴포넌트
@@ -22,8 +20,8 @@ const contactItems = [
   {
     icon: <EmailIcon sx={{ fontSize: 20 }} />,
     label: 'Email',
-    value: 'your@email.com',
-    copyText: 'your@email.com',
+    value: 'skadnjs153@naver.com',
+    copyText: 'skadnjs153@naver.com',
   },
 ];
 
@@ -32,16 +30,6 @@ const snsItems = [
     icon: <GitHubIcon sx={{ fontSize: 18 }} />,
     label: 'GitHub',
     copyText: 'https://github.com/Kyo1901',
-  },
-  {
-    icon: <LinkedInIcon sx={{ fontSize: 18 }} />,
-    label: 'LinkedIn',
-    copyText: 'https://linkedin.com/in/yourprofile',
-  },
-  {
-    icon: <InstagramIcon sx={{ fontSize: 18 }} />,
-    label: 'Instagram',
-    copyText: 'https://instagram.com/yourhandle',
   },
 ];
 

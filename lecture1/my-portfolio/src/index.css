@@ -47,3 +47,38 @@ html, body {
   display: flex;
   flex-direction: column;
 }
+
+/* ── 공통 애니메이션 ── */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 타이핑 커서 깜빡임 */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* 스크롤 유도 화살표 바운스 */
+@keyframes bounceDown {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(8px); }
+}
+
+/* 접근성: 모션 감소 설정 시 애니메이션 단순화 */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes fadeInUp {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes blink     { from, to { opacity: 1; } }
+  @keyframes bounceDown { from, to { transform: translateX(-50%) translateY(0); } }
+}
