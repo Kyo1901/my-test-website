@@ -253,7 +253,7 @@ function HomePage() {
                 더 알아보기 &rsaquo;
               </Button>
             </Box>
-          </Box>
+          </ScrollReveal>
         </Container>
       </Box>
 
