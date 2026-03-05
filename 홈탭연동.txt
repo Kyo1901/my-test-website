@@ -1,0 +1,64 @@
+About Me 탭과 홈 탭을 연동하는 시스템을 만들어줘:
+
+Context API 구조:
+```javascript
+// PortfolioContext.js
+const PortfolioContext = createContext();
+
+export const PortfolioProvider = ({ children }) => {
+  const [aboutMeData, setAboutMeData] = useState({
+    basicInfo: { name: "", education: "", major: "", experience: "", photo: "" },
+    sections: [
+      { id: "dev-story", title: "나의 개발 스토리", content: "", showInHome: true },
+      { id: "philosophy", title: "개발 철학", content: "", showInHome: true },
+      { id: "personal", title: "개인적인 이야기", content: "", showInHome: false }
+    ],
+    skills: [
+      { id: 1, icon: "orange-diamond", name: "HTML", level: 80, category: "Frontend" },
+      // ... 나머지 스킬들
+    ]
+  });
+
+  // 홈 탭용 데이터 자동 생성
+  const getHomeData = () => {
+    const homeContent = aboutMeData.sections
+      .filter(section => section.showInHome)
+      .map(section => ({
+        title: section.title,
+        summary: section.content.substring(0, 100) + "..."
+      }));
+
+    const topSkills = aboutMeData.skills
+      .sort((a, b) => b.level - a.level)
+      .slice(0, 4); // 상위 4개만
+
+    return { content: homeContent, skills: topSkills, basicInfo: aboutMeData.basicInfo };
+  };
+
+  return (
+    <PortfolioContext.Provider value={{ aboutMeData, setAboutMeData, getHomeData }}>
+      {children}
+    </PortfolioContext.Provider>
+  );
+};
+```
+
+홈 탭 About Me 섹션 업데이트:
+- 메인 콘텐츠: "나의 개발 스토리" 요약 (2-3줄)
+- 사이드: 프로필 사진 + 기본 정보 카드
+- 하단: 주요 스킬 4개 아이콘으로 표시
+- "더 알아보기" 버튼 → About Me 탭 이동
+
+홈 탭 스킬 섹션 업데이트:
+- 상위 4개 스킬을 간단한 아이콘 + 이름으로 표시
+- "전체 스킬 보기" 버튼 → About Me 탭 이동
+
+실시간 연동:
+- About Me 탭에서 내용 수정 시 홈 탭 즉시 반영
+- useContext 훅으로 데이터 접근
+- 컴포넌트 리렌더링 최적화
+
+결과 확인:
+1. About Me 탭에서 "나의 개발 스토리" 수정
+2. 홈 탭으로 이동해서 변경사항 확인
+3. 스킬 레벨 변경 후 홈 탭 반영 확인
