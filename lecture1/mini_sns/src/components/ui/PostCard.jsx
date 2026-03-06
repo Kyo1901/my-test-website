@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -8,25 +9,39 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useSession } from '../../context/SessionContext.jsx';
 import useLike from '../../hooks/useLike.js';
+import { supabase } from '../../utils/supabase.js';
+import { removePostHashtags } from '../../utils/hashtag.js';
 
 /**
  * 피드 게시물 카드 컴포넌트
  *
  * Props:
  * @param {object} post - 게시물 데이터 (id, caption, image_url, likes_count, created_at, sns_users, sns_comments) [Required]
+ * @param {function} onDeleted - 삭제 완료 콜백 (post.id 전달) [Optional]
  *
  * Example usage:
- * <PostCard post={post} />
+ * <PostCard post={post} onDeleted={handleDeleted} />
  */
-const PostCard = ({ post }) => {
+const PostCard = ({ post, onDeleted }) => {
   const navigate = useNavigate();
   const { user } = useSession();
   const { liked, likesCount, toggleLike } = useLike(post.id, post.likes_count, user?.id);
+  const [menuAnchor, setMenuAnchor] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const isMyPost = Number(user?.id) === Number(post.user_id);
 
   const author = post.sns_users || {};
   const avatarLetter = (author.display_name || 'U')[0];
@@ -40,6 +55,13 @@ const PostCard = ({ post }) => {
 
   const handleCardClick = () => {
     navigate(`/post/${post.id}`);
+  };
+
+  const handleDelete = async () => {
+    await removePostHashtags(post.id);
+    await supabase.from('sns_posts').update({ is_deleted: 1 }).eq('id', post.id);
+    setDeleteDialogOpen(false);
+    if (onDeleted) onDeleted(post.id);
   };
 
   return (
@@ -64,6 +86,29 @@ const PostCard = ({ post }) => {
             @{ author.username } · { timeAgo(post.created_at) }
           </Typography>
         }
+        action={ isMyPost && (
+          <>
+            <IconButton
+              onClick={(e) => { e.stopPropagation(); setMenuAnchor(e.currentTarget); }}
+              sx={{ mt: 0.5 }}
+            >
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              anchorEl={menuAnchor}
+              open={Boolean(menuAnchor)}
+              onClose={() => setMenuAnchor(null)}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <MenuItem
+                onClick={() => { setDeleteDialogOpen(true); setMenuAnchor(null); }}
+                sx={{ color: '#E53935' }}
+              >
+                삭제
+              </MenuItem>
+            </Menu>
+          </>
+        )}
         sx={{ pb: 1 }}
       />
 
@@ -106,6 +151,18 @@ const PostCard = ({ post }) => {
           </Box>
         </CardContent>
       )}
+
+      {/* 게시글 삭제 확인 다이얼로그 */}
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)} onClick={(e) => e.stopPropagation()}>
+        <DialogTitle>게시글 삭제</DialogTitle>
+        <DialogContent>
+          <Typography>이 게시글을 삭제할까요? 삭제 후에는 복구가 어렵습니다.</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>취소</Button>
+          <Button onClick={handleDelete} sx={{ color: '#E53935' }}>삭제</Button>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 };

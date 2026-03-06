@@ -4,9 +4,11 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import LinearProgress from '@mui/material/LinearProgress';
+import Button from '@mui/material/Button';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { supabase } from '../../utils/supabase.js';
 
 /**
@@ -15,15 +17,26 @@ import { supabase } from '../../utils/supabase.js';
  * Props:
  * @param {object} userGroup - { user, stories[] } [Required]
  * @param {function} onClose - 닫기 콜백 [Required]
- * @param {number|null} currentUserId - 로그인한 사용자 ID [Optional]
+ * @param {number|null} currentUserId - 현재 로그인한 사용자 ID (조회 기록용) [Optional]
+ * @param {boolean} isOwner - 현재 사용자가 스토리 작성자인지 여부 [Optional]
+ * @param {function} onStoryDeleted - 스토리 삭제 완료 콜백 [Optional]
  *
  * Example usage:
- * <StoryViewer userGroup={group} onClose={handleClose} currentUserId={user?.id} />
+ * <StoryViewer userGroup={group} onClose={handleClose} currentUserId={user?.id} isOwner={true} onStoryDeleted={handleDeleted} />
  */
-const StoryViewer = ({ userGroup, onClose, currentUserId }) => {
+const StoryViewer = ({ userGroup, onClose, currentUserId, isOwner, onStoryDeleted }) => {
   const [index, setIndex] = useState(0);
+  const [confirmVisible, setConfirmVisible] = useState(false);
   const stories = userGroup.stories;
   const story = stories[index];
+
+  const handleDeleteStory = async (e) => {
+    e.stopPropagation();
+    await supabase.from('sns_stories').delete().eq('id', story.id);
+    setConfirmVisible(false);
+    if (onStoryDeleted) onStoryDeleted();
+    onClose();
+  };
 
   const handleView = async (storyId) => {
     if (!currentUserId) return;
@@ -39,6 +52,7 @@ const StoryViewer = ({ userGroup, onClose, currentUserId }) => {
 
   const handleNext = (e) => {
     e.stopPropagation();
+    if (confirmVisible) return;
     if (index < stories.length - 1) setIndex(index + 1);
     else onClose();
   };
@@ -103,7 +117,15 @@ const StoryViewer = ({ userGroup, onClose, currentUserId }) => {
         <Typography variant='body2' fontWeight={700} sx={{ color: '#fff', flex: 1 }}>
           { userGroup.user?.display_name }
         </Typography>
-        <IconButton onClick={onClose} sx={{ color: '#fff' }}>
+        { isOwner && (
+          <IconButton
+            onClick={(e) => { e.stopPropagation(); setConfirmVisible(true); }}
+            sx={{ color: '#fff' }}
+          >
+            <DeleteOutlineIcon />
+          </IconButton>
+        )}
+        <IconButton onClick={(e) => { e.stopPropagation(); onClose(); }} sx={{ color: '#fff' }}>
           <CloseIcon />
         </IconButton>
       </Box>
@@ -153,6 +175,48 @@ const StoryViewer = ({ userGroup, onClose, currentUserId }) => {
         >
           <ArrowForwardIosIcon />
         </IconButton>
+      )}
+
+      {/* 삭제 확인 오버레이 (Portal 아닌 뷰어 내부에 직접 렌더링) */}
+      { confirmVisible && (
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 20,
+            bgcolor: 'rgba(0,0,0,0.75)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 3,
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Typography variant='h6' sx={{ color: '#fff', fontWeight: 700 }}>
+            스토리 삭제
+          </Typography>
+          <Typography variant='body2' sx={{ color: 'rgba(255,255,255,0.8)' }}>
+            이 스토리를 삭제할까요?
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button
+              variant='outlined'
+              onClick={(e) => { e.stopPropagation(); setConfirmVisible(false); }}
+              sx={{ color: '#fff', borderColor: 'rgba(255,255,255,0.6)', minWidth: 80 }}
+            >
+              취소
+            </Button>
+            <Button
+              variant='contained'
+              color='error'
+              onClick={handleDeleteStory}
+              sx={{ minWidth: 80 }}
+            >
+              삭제
+            </Button>
+          </Box>
+        </Box>
       )}
     </Box>
   );

@@ -20,6 +20,7 @@ const StoryRow = () => {
   const { user } = useSession();
   const [stories, setStories] = useState([]);
   const [viewingUser, setViewingUser] = useState(null);
+  const [viewerIsOwner, setViewerIsOwner] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const fetchStories = async () => {
@@ -32,7 +33,7 @@ const StoryRow = () => {
 
     if (!data) return;
 
-    // 사용자별로 그룹화 (최신 스토리 1개만 대표)
+    // 사용자별로 그룹화
     const grouped = {};
     data.forEach((s) => {
       const uid = s.user_id;
@@ -53,6 +54,14 @@ const StoryRow = () => {
     fetchStories();
   };
 
+  const handleStoryDeleted = () => {
+    fetchStories();
+  };
+
+  // 내 스토리 그룹 (있으면 뷰어 열기, 없으면 작성 모달)
+  const myStoryGroup = user ? stories.find((g) => Number(g.user?.id) === Number(user.id)) : null;
+  const otherStories = user ? stories.filter((g) => Number(g.user?.id) !== Number(user.id)) : stories;
+
   return (
     <>
       <Box
@@ -66,20 +75,34 @@ const StoryRow = () => {
           '&::-webkit-scrollbar': { display: 'none' },
         }}
       >
-        {/* 내 스토리 추가 버튼 */}
+        {/* 내 스토리 버튼 */}
         { user && (
           <Box
             sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, cursor: 'pointer' }}
-            onClick={() => setIsCreateOpen(true)}
+            onClick={() => {
+              if (myStoryGroup) { setViewingUser(myStoryGroup); setViewerIsOwner(true); }
+              else { setIsCreateOpen(true); }
+            }}
           >
             <Box sx={{ position: 'relative', mb: 0.5 }}>
               <Avatar
                 src={user.profile_image}
-                sx={{ width: 60, height: 60, bgcolor: '#FF8C42', border: '2px solid #f0e8e0' }}
+                sx={{
+                  width: 60,
+                  height: 60,
+                  bgcolor: '#FF8C42',
+                  border: myStoryGroup ? '2.5px solid #FF8C42' : '2px solid #f0e8e0',
+                  padding: myStoryGroup ? '2px' : 0,
+                  boxSizing: 'border-box',
+                  outline: myStoryGroup ? '2px solid #fff' : 'none',
+                  outlineOffset: '1px',
+                }}
               >
                 { (user.display_name || 'U')[0] }
               </Avatar>
+              {/* 스토리 추가 버튼 (항상 표시) */}
               <Box
+                onClick={(e) => { e.stopPropagation(); setIsCreateOpen(true); }}
                 sx={{
                   position: 'absolute',
                   bottom: 0,
@@ -104,11 +127,11 @@ const StoryRow = () => {
         )}
 
         {/* 다른 사용자 스토리 */}
-        { stories.map((group) => (
+        { otherStories.map((group) => (
           <Box
             key={group.user?.id}
             sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, cursor: 'pointer' }}
-            onClick={() => setViewingUser(group)}
+            onClick={() => { setViewingUser(group); setViewerIsOwner(false); }}
           >
             <Avatar
               src={group.user?.profile_image}
@@ -137,8 +160,10 @@ const StoryRow = () => {
       { viewingUser && (
         <StoryViewer
           userGroup={viewingUser}
-          onClose={() => setViewingUser(null)}
+          onClose={() => { setViewingUser(null); setViewerIsOwner(false); }}
           currentUserId={user?.id}
+          isOwner={viewerIsOwner}
+          onStoryDeleted={handleStoryDeleted}
         />
       )}
 

@@ -131,7 +131,11 @@ const HomePage = () => {
             </Box>
           ) : (
             posts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard
+                key={post.id}
+                post={post}
+                onDeleted={(postId) => setPosts((prev) => prev.filter((p) => p.id !== postId))}
+              />
             ))
           )}
       </Container>
